@@ -1,7 +1,7 @@
 {
-  "name": "music-score-transition",
-  "version": "0.0.5",
-  "description": "abc记谱法转换为tonejs使用数据",
+  "name": "@encaik/abc",
+  "version": "0.0.2",
+  "description": "abc记谱法解析转换",
   "main": "./src/index.ts",
   "scripts": {
     "build": "rollup -c"
