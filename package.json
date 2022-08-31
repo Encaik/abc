@@ -4,12 +4,7 @@
   "description": "abc记谱法转换为tonejs使用数据",
   "main": "./src/index.ts",
   "scripts": {
-    "serve": "npm run clean && tsc -w",
-    "start": "node ./dist/test/index.js",
-    "clean": "rimraf ./dist/"
-  },
-  "dependencies": {
-    "typescript": "^4.6.3"
+    "build": "rollup -c"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
@@ -19,8 +14,14 @@
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.6.1",
-    "rimraf": "^3.0.2"
+    "rollup": "^2.79.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.3"
   },
   "author": "encaik",
-  "license": "ISC"
+  "license": "ISC",
+  "browser": "dist/bundle.esm.ts"
 }
