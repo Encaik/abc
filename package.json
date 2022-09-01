@@ -1,9 +1,12 @@
 {
   "name": "@encaik/abc",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "abc记谱法解析转换",
-  "main": "./src/index.ts",
+  "module": "dist/bundle.esm.js",
+  "browser": "dist/bundle.umd.js",
+  "main": "dist/bundle.esm.js",
   "scripts": {
+    "watch":"rollup -c -w",
     "build": "rollup -c"
   },
   "devDependencies": {
@@ -22,6 +25,5 @@
     "typescript": "^4.6.3"
   },
   "author": "encaik",
-  "license": "ISC",
-  "browser": "dist/bundle.esm.ts"
+  "license": "ISC"
 }
