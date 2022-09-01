@@ -9,12 +9,12 @@ export interface MusicScore {
 
 export interface Note {
   type?: 'note' | 'bar-line' | 'double-bar-line' | 'bold-double-bar-line'; // 类型
-  pitch?: string; // 音高
+  name?: string; // 音名
+  pitch?: number; // 音高
   duration?: string; // 时值
   sharp?: boolean; // 升号
   flat?: boolean; // 降号
   'double-sharp'?: boolean; // 重升号
   'double-flat'?: boolean; // 重降号
   nature?: boolean; // 还原号
-  register?: number; // 音区
 }

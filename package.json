@@ -6,7 +6,7 @@
   "browser": "dist/bundle.umd.js",
   "main": "dist/bundle.esm.js",
   "scripts": {
-    "watch":"rollup -c -w",
+    "watch": "rollup -c -w",
     "build": "rollup -c"
   },
   "devDependencies": {

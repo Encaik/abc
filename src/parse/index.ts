@@ -7,24 +7,24 @@ import { MusicScore, Note } from '../type';
  */
 export function parse(txt: string): MusicScore[] {
   const scoreReg: RegExp = new RegExp(
-    "([a-zA-Z]:.*\\s)*[a-gA-G|^_=',/(2|3|4|6|8|16|32)\\s]*",
+    "([a-zA-Z]:.*\\s)*(\\s*({|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?)\\s*)*",
     'gm'
   );
   const infoReg: RegExp = new RegExp('^[A-Z]:.+', 'gm');
   const musicReg: RegExp = new RegExp(
-    "^((?!:)\\s?[_=^]*([A-Za-z]|[|()])[',]*([2-9]|/[2-9])?\\s?(?!:))+",
+    "^(\\s*({|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?)\\s*)*",
     'gm'
   );
-  console.log();
   const scoreList: MusicScore[] = [];
   txt.match(scoreReg).forEach((score) => {
     if (score) {
       scoreList.push({
-        ...parseInfo(score.match(infoReg).join()),
-        music: parseMusic(score.match(musicReg).join()),
+        ...parseInfo(score.match(infoReg).join('')),
+        music: parseMusic(score.match(musicReg).join('')),
       });
     }
   });
+  console.log(scoreList);
   return scoreList;
 }
 
@@ -50,7 +50,13 @@ export function parseInfo(infoTxt: string): MusicScore {
  * @return {Note[]}
  */
 export function parseMusic(musicTxt: string): Note[] {
-  const musicScoreArr = musicTxt.split(/\s/);
+  const musicScoreStr = musicTxt.replace(/\s/g, '');
+  const noteReg: RegExp = new RegExp(
+    "{|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?",
+    'g'
+  );
+  const musicScoreArr = musicScoreStr.match(noteReg);
+  console.log(musicScoreArr);
   const noteList: Note[] = [];
   for (let index = 0; index < musicScoreArr.length; index++) {
     const note = musicScoreArr[index];
@@ -60,6 +66,14 @@ export function parseMusic(musicTxt: string): Note[] {
       case '(':
         break;
       case ')':
+        break;
+      case '{':
+        break;
+      case '}':
+        break;
+      case '|:':
+        break;
+      case ':|':
         break;
       case '|':
         noteList.push({
@@ -72,13 +86,20 @@ export function parseMusic(musicTxt: string): Note[] {
         });
         break;
       default:
-        const pitch = /[A-Za-z]/.exec(note)[0];
-        const operation = /[/]/.test(note);
-        const value = Number(/[2-9]/.exec(note)?.[0] || 1);
+        const name = /[A-Ga-g]/.exec(note)[0];
+        const pitchUp = /'+/.exec(note)?.[0]?.split('').length || 0;
+        const pitchDown = /,+/.exec(note)?.[0]?.split('').length || 0;
+        const duration = /\/?\d+/.exec(note)?.[0] || '1';
         noteList.push({
           type: 'note',
-          pitch: pitch,
-          duration: `${operation ? '1/' : ''}${value}`,
+          name,
+          pitch: 4 + pitchUp - pitchDown,
+          duration,
+          sharp: /^(?<!\^)\^(?!\^)/.test(note),
+          flat: /^(?<!_)_(?!_)/.test(note),
+          'double-sharp': /^\^{2}/.test(note),
+          'double-flat': /^_{2}/.test(note),
+          nature: /^=/.test(note),
         });
         break;
     }
