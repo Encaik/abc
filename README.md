@@ -17,3 +17,21 @@
 ### v0.0.4
 
 - 添加对升降号，升降调和音高，音长的解析
+
+## 使用
+
+```
+pnpm i @encaik/abc
+```
+
+```
+import { parse } from "@encaik/abc";
+
+let txt = `X: 1
+T: Cooley's
+M: 4/4
+L: 1/8
+K: Emin
+|E E B B A B E B|`;
+let musicJson = parse(txt);
+```
