@@ -1,13 +1,15 @@
 {
   "name": "@encaik/abc",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "abc记谱法解析转换",
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle.umd.js",
   "main": "dist/bundle.esm.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "watch": "rollup -c -w",
-    "build": "rollup -c"
+    "build": "npm run types && rollup -c",
+    "types": "tsc -b ./tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
@@ -19,6 +21,7 @@
     "prettier": "^2.6.1",
     "rollup": "^2.79.0",
     "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-dts": "^4.2.2",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-typescript": "^1.0.1",
     "tslib": "^2.4.0",

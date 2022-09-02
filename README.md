@@ -18,14 +18,20 @@
 
 - 添加对升降号，升降调和音高，音长的解析
 
+### v0.0.5
+
+- 添加 Parser 解析器类
+- 添加类型文件生成配置
+- 添加 rollup 类型文件打包
+
 ## 使用
 
-```
+```sh
 pnpm i @encaik/abc
 ```
 
-```
-import { parse } from "@encaik/abc";
+```javascript
+import { Parser } from '@encaik/abc';
 
 let txt = `X: 1
 T: Cooley's
@@ -33,5 +39,9 @@ M: 4/4
 L: 1/8
 K: Emin
 |E E B B A B E B|`;
-let musicJson = parse(txt);
+let parser = new Parser(txt);
+let resStr = parser.parse();
+// 或
+let parser = new Parser();
+let resStr = parser.parse(txt);
 ```
