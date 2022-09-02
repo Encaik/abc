@@ -7,8 +7,18 @@ export interface MusicScore {
   music?: Note[]; // 乐谱
 }
 
+export enum NoteType {
+  Note = 'note',
+  BarLine = 'bar-line',
+  DoubleBarLine = 'double-bar-line',
+  FinalBarLine = 'final-bar-line',
+  RepeatLineStart = 'repeat-line-start',
+  RepeatLineEnd = 'repeat-line-end',
+}
+
 export interface Note {
-  type?: 'note' | 'bar-line' | 'double-bar-line' | 'bold-double-bar-line'; // 类型
+  noteIndex?: number;
+  type?: NoteType; // 类型
   name?: string; // 音名
   pitch?: number; // 音高
   duration?: string; // 时值
@@ -17,4 +27,6 @@ export interface Note {
   'double-sharp'?: boolean; // 重升号
   'double-flat'?: boolean; // 重降号
   nature?: boolean; // 还原号
+  grace?: boolean; // 装饰音
+  slur?: Symbol[]; // 连音
 }

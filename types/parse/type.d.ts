@@ -6,8 +6,17 @@ export interface MusicScore {
     tone?: string;
     music?: Note[];
 }
+export declare enum NoteType {
+    Note = "note",
+    BarLine = "bar-line",
+    DoubleBarLine = "double-bar-line",
+    FinalBarLine = "final-bar-line",
+    RepeatLineStart = "repeat-line-start",
+    RepeatLineEnd = "repeat-line-end"
+}
 export interface Note {
-    type?: 'note' | 'bar-line' | 'double-bar-line' | 'bold-double-bar-line';
+    noteIndex?: number;
+    type?: NoteType;
     name?: string;
     pitch?: number;
     duration?: string;
@@ -16,4 +25,6 @@ export interface Note {
     'double-sharp'?: boolean;
     'double-flat'?: boolean;
     nature?: boolean;
+    grace?: boolean;
+    slur?: Symbol[];
 }

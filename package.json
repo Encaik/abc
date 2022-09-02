@@ -1,6 +1,6 @@
 {
   "name": "@encaik/abc",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "abc记谱法解析转换",
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle.umd.js",

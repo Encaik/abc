@@ -1,4 +1,4 @@
-import { MusicScore, Note } from './type';
+import { MusicScore, Note, NoteType } from './type';
 
 /**
  * Creates a new Parser.
@@ -73,31 +73,43 @@ export class Parser {
     const musicScoreArr = musicScoreStr.match(noteReg);
     console.log(musicScoreArr);
     const noteList: Note[] = [];
+    let noteIndex: number = 1;
+    let isGraceNote: boolean = false;
+    const slurStack: Symbol[] = [];
     for (let index = 0; index < musicScoreArr.length; index++) {
       const note = musicScoreArr[index];
       if (!note) continue;
-      console.log(note);
       switch (note) {
         case '(':
+          slurStack.push(Symbol());
           break;
         case ')':
+          slurStack.pop();
           break;
         case '{':
+          isGraceNote = true;
           break;
         case '}':
+          isGraceNote = false;
           break;
         case '|:':
+          noteList.push({
+            type: NoteType.RepeatLineStart,
+          });
           break;
         case ':|':
+          noteList.push({
+            type: NoteType.RepeatLineEnd,
+          });
           break;
         case '|':
           noteList.push({
-            type: 'bar-line',
+            type: NoteType.BarLine,
           });
           break;
         case '||':
           noteList.push({
-            type: 'bold-double-bar-line',
+            type: NoteType.FinalBarLine,
           });
           break;
         default:
@@ -106,7 +118,8 @@ export class Parser {
           const pitchDown = /,+/.exec(note)?.[0]?.split('').length || 0;
           const duration = /\/?\d+/.exec(note)?.[0] || '1';
           noteList.push({
-            type: 'note',
+            noteIndex,
+            type: NoteType.Note,
             name,
             pitch: 4 + pitchUp - pitchDown,
             duration,
@@ -115,7 +128,10 @@ export class Parser {
             'double-sharp': /^\^{2}/.test(note),
             'double-flat': /^_{2}/.test(note),
             nature: /^=/.test(note),
+            grace: isGraceNote,
+            slur: [...slurStack],
           });
+          noteIndex++;
           break;
       }
     }
