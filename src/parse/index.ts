@@ -42,10 +42,6 @@ export class Parser {
    */
   parseScore(scoreStr: string): MusicScore {
     const infoReg: RegExp = new RegExp('[A-Z]:.*', 'g');
-    const musicReg: RegExp = new RegExp(
-      "^(\\s*({|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?)\\s*)*",
-      'gm'
-    );
     console.log('parseInfo:', scoreStr.match(infoReg));
     console.log('parseMusic:', scoreStr.replace(infoReg, '').trim());
     return {
