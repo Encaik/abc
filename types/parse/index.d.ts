@@ -1,10 +1,11 @@
-import { MusicScore, Note } from './type';
+import { MusicScore, MusicScoreMap, Note } from './type';
 /**
  * Creates a new Parser.
  * @class
  */
 export declare class Parser {
     parseStr: string;
+    scoreMap: MusicScoreMap;
     /**
      * @constructs Parser
      * @param {string} parseStr 初始化解析字符串
@@ -13,15 +14,21 @@ export declare class Parser {
     /**
      * 解析abc乐谱
      * @param {string} parseStr 如果为空则使用初始化解析器传入字符串
-     * @return {MusicScore[]}
+     * @return {MusicScoreMap}
      */
-    parse(parseStr?: string): MusicScore[];
+    parse(parseStr?: string): MusicScoreMap;
+    /**
+     * 解析拥有唯一标识的单首乐谱
+     * @param {String} scoreStr
+     * @return {MusicScore}
+     */
+    parseScore(scoreStr: string): MusicScore;
     /**
      * 解析abc乐谱信息部分
-     * @param {string} infoTxt abc乐曲信息部分字符串
+     * @param {string[]} infoStrList abc乐曲信息部分字符串
      * @return {MusicInfo}
      */
-    parseInfo(infoTxt: string): MusicScore;
+    parseInfo(infoStrList: string[]): MusicScore;
     /**
      * 解析abc乐谱部分
      * @param {string} musicTxt abc乐曲乐谱部分字符串

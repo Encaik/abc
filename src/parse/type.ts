@@ -1,10 +1,15 @@
 export interface MusicScore {
+  id?: string; // 唯一标识
   name?: string; // 名称
   beat?: string; // 节拍
   spend?: string; // 速度
   duration?: string; // 默认音符时值
   tone?: string; // 调号
   music?: Note[]; // 乐谱
+}
+
+export interface MusicScoreMap {
+  [key: string]: MusicScore;
 }
 
 export enum NoteType {

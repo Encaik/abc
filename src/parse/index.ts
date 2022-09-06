@@ -1,4 +1,4 @@
-import { MusicScore, Note, NoteType } from './type';
+import { MusicScore, MusicScoreMap, Note, NoteType } from './type';
 
 /**
  * Creates a new Parser.
@@ -6,6 +6,7 @@ import { MusicScore, Note, NoteType } from './type';
  */
 export class Parser {
   parseStr: string;
+  scoreMap: MusicScoreMap;
 
   /**
    * @constructs Parser
@@ -13,50 +14,67 @@ export class Parser {
    */
   constructor(parseStr: string = '') {
     this.parseStr = parseStr;
+    this.scoreMap = {};
   }
 
   /**
    * 解析abc乐谱
    * @param {string} parseStr 如果为空则使用初始化解析器传入字符串
-   * @return {MusicScore[]}
+   * @return {MusicScoreMap}
    */
-  parse(parseStr: string = this.parseStr): MusicScore[] {
-    const scoreReg: RegExp = new RegExp(
-      "([a-zA-Z]:.*\\s)*(\\s*({|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?)\\s*)*",
-      'gm'
-    );
-    const infoReg: RegExp = new RegExp('^[A-Z]:.+', 'gm');
+  parse(parseStr: string = this.parseStr): MusicScoreMap {
+    const scoreReg: RegExp = new RegExp('(X:)?[^X]+', 'g');
+    console.log('parseScore:', parseStr.match(scoreReg));
+    parseStr.match(scoreReg).forEach((scoreStr) => {
+      if (scoreStr) {
+        const score = this.parseScore(scoreStr);
+        this.scoreMap[score.id] = score;
+      }
+    });
+    console.log(this.scoreMap);
+    return this.scoreMap;
+  }
+
+  /**
+   * 解析拥有唯一标识的单首乐谱
+   * @param {String} scoreStr
+   * @return {MusicScore}
+   */
+  parseScore(scoreStr: string): MusicScore {
+    const infoReg: RegExp = new RegExp('[A-Z]:.*', 'g');
     const musicReg: RegExp = new RegExp(
       "^(\\s*({|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?)\\s*)*",
       'gm'
     );
-    const scoreList: MusicScore[] = [];
-    parseStr.match(scoreReg).forEach((score) => {
-      if (score) {
-        scoreList.push({
-          ...this.parseInfo(score.match(infoReg).join('')),
-          music: this.parseMusic(score.match(musicReg).join('')),
-        });
-      }
-    });
-    console.log(scoreList);
-    return scoreList;
+    console.log('parseInfo:', scoreStr.match(infoReg));
+    console.log('parseMusic:', scoreStr.replace(infoReg, '').trim());
+    return {
+      ...this.parseInfo(scoreStr.match(infoReg)),
+      music: this.parseMusic(scoreStr.replace(infoReg, '').trim()),
+    };
   }
 
   /**
    * 解析abc乐谱信息部分
-   * @param {string} infoTxt abc乐曲信息部分字符串
+   * @param {string[]} infoStrList abc乐曲信息部分字符串
    * @return {MusicInfo}
    */
-  parseInfo(infoTxt: string): MusicScore {
-    const info = {
-      name: /(?<=T\:)[^\,]*/.exec(infoTxt)[0],
-      beat: /(?<=M\:)[^\,]*/.exec(infoTxt)[0],
-      spend: /(?<=Q\:)[^\,]*/.exec(infoTxt)[0],
-      duration: /(?<=L\:)[^\,]*/.exec(infoTxt)[0],
-      tone: /(?<=K\:)[^\,]*/.exec(infoTxt)[0],
+  parseInfo(infoStrList: string[]): MusicScore {
+    const infoList: MusicScore = {};
+    const infoNameMap = {
+      X: 'id',
+      T: 'title',
+      M: 'beat',
+      Q: 'spend',
+      L: 'unitNoteLen',
+      K: 'key',
     };
-    return info;
+    infoStrList.forEach((infoStr: string) => {
+      const sign = infoStr.slice(0, 1);
+      const key = infoNameMap[sign];
+      infoList[key] = infoStr.slice(2);
+    });
+    return infoList;
   }
 
   /**

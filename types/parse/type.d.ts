@@ -1,10 +1,14 @@
 export interface MusicScore {
+    id?: string;
     name?: string;
     beat?: string;
     spend?: string;
     duration?: string;
     tone?: string;
     music?: Note[];
+}
+export interface MusicScoreMap {
+    [key: string]: MusicScore;
 }
 export declare enum NoteType {
     Note = "note",
