@@ -25,10 +25,10 @@ export declare class Parser {
     parseScore(scoreStr: string): MusicScore;
     /**
      * 解析abc乐谱信息部分
-     * @param {string[]} infoStrList abc乐曲信息部分字符串
-     * @return {MusicInfo}
+     * @param {MusicScore} score
+     * @param {string} infoStr abc乐曲信息部分字符串
      */
-    parseInfo(infoStrList: string[]): MusicScore;
+    parseInfo(score: MusicScore, infoStr: string): void;
     /**
      * 解析abc乐谱部分
      * @param {string} musicTxt abc乐曲乐谱部分字符串

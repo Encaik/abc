@@ -1,3 +1,5 @@
+import { AbcError } from '../error';
+import { LogLevel, ModuleType } from '../error/types';
 import { MusicScore, MusicScoreMap, Note, NoteType } from './type';
 
 /**
@@ -13,6 +15,12 @@ export class Parser {
    * @param {string} parseStr 初始化解析字符串
    */
   constructor(parseStr: string = '') {
+    if (!parseStr)
+      new AbcError(
+        ModuleType.Parse,
+        '初始化解析器未传入解析字符串或字符串为空。',
+        LogLevel.Warn
+      );
     this.parseStr = parseStr;
     this.scoreMap = {};
   }
@@ -23,6 +31,10 @@ export class Parser {
    * @return {MusicScoreMap}
    */
   parse(parseStr: string = this.parseStr): MusicScoreMap {
+    if (!parseStr) {
+      new AbcError(ModuleType.Parse, '无法解析空字符串。', LogLevel.Error);
+      return;
+    }
     const scoreReg: RegExp = new RegExp('(X:)?[^X]+', 'g');
     console.log('parseScore:', parseStr.match(scoreReg));
     parseStr.match(scoreReg).forEach((scoreStr) => {
@@ -41,22 +53,23 @@ export class Parser {
    * @return {MusicScore}
    */
   parseScore(scoreStr: string): MusicScore {
+    const score: MusicScore = {};
     const infoReg: RegExp = new RegExp('[A-Z]:.*', 'g');
-    console.log('parseInfo:', scoreStr.match(infoReg));
-    console.log('parseMusic:', scoreStr.replace(infoReg, '').trim());
-    return {
-      ...this.parseInfo(scoreStr.match(infoReg)),
-      music: this.parseMusic(scoreStr.replace(infoReg, '').trim()),
-    };
+    score.music = this.parseMusic(
+      scoreStr.replace(infoReg, (infoStr) => {
+        const info = this.parseInfo(score, infoStr);
+        return '';
+      })
+    );
+    return score;
   }
 
   /**
    * 解析abc乐谱信息部分
-   * @param {string[]} infoStrList abc乐曲信息部分字符串
-   * @return {MusicInfo}
+   * @param {MusicScore} score
+   * @param {string} infoStr abc乐曲信息部分字符串
    */
-  parseInfo(infoStrList: string[]): MusicScore {
-    const infoList: MusicScore = {};
+  parseInfo(score: MusicScore, infoStr: string) {
     const infoNameMap = {
       X: 'id',
       T: 'title',
@@ -65,12 +78,9 @@ export class Parser {
       L: 'unitNoteLen',
       K: 'key',
     };
-    infoStrList.forEach((infoStr: string) => {
-      const sign = infoStr.slice(0, 1);
-      const key = infoNameMap[sign];
-      infoList[key] = infoStr.slice(2);
-    });
-    return infoList;
+    const infoReg = new RegExp('([A-Z]):(.*)', 'g');
+    const regArr = infoReg.exec(infoStr);
+    score[infoNameMap[regArr[1]]] = regArr[2];
   }
 
   /**
