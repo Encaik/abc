@@ -1,11 +1,15 @@
 {
   "name": "@encaik/abc",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "abc记谱法解析转换",
   "module": "dist/bundle.esm.js",
   "browser": "dist/bundle.umd.js",
   "main": "dist/bundle.esm.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Encaik/abc.git"
+  },
   "scripts": {
     "watch": "rollup -c -w",
     "build": "npm run types && rollup -c",
