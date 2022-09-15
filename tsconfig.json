@@ -3,6 +3,7 @@
     "declaration": true,
     "declarationDir": "./types",
     "emitDeclarationOnly": true,
+    "esModuleInterop": true,
     "rootDir": "./src"
   }
 }
