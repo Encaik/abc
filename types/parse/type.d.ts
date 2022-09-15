@@ -5,7 +5,21 @@ export interface MusicScore {
     spend?: string;
     duration?: string;
     tone?: string;
-    music?: Note[];
+    music?: Array<MusicLine>;
+    totalNotes?: number;
+    scoreLines?: number;
+    startLine?: number;
+    endLine?: number;
+}
+export interface MusicLine {
+    scoreLineIndex?: number;
+    noteLineIndex?: number;
+    totalLineNotes?: number;
+    notes?: Note[];
+}
+export interface HeaderLine {
+    key?: string;
+    value?: string;
 }
 export interface MusicScoreMap {
     [key: string]: MusicScore;

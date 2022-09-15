@@ -1,4 +1,4 @@
-import { MusicScore, MusicScoreMap, Note } from './type';
+import { HeaderLine, MusicLine, MusicScore, MusicScoreMap } from './type';
 /**
  * Creates a new Parser.
  * @class
@@ -19,20 +19,24 @@ export declare class Parser {
     parse(parseStr?: string): MusicScoreMap;
     /**
      * 解析拥有唯一标识的单首乐谱
-     * @param {String} scoreStr
+     * @param {String[]} parseLines
      * @return {MusicScore}
      */
-    parseScore(scoreStr: string): MusicScore;
+    parseScore(parseLines: string[]): MusicScore;
     /**
      * 解析abc乐谱信息部分
-     * @param {MusicScore} score
      * @param {string} infoStr abc乐曲信息部分字符串
+     * @return { HeaderLine }
      */
-    parseInfo(score: MusicScore, infoStr: string): void;
+    parseInfo(infoStr: string): HeaderLine;
     /**
      * 解析abc乐谱部分
      * @param {string} musicTxt abc乐曲乐谱部分字符串
-     * @return {Note[]}
+     * @return {MusicLine}
      */
-    parseMusic(musicTxt: string): Note[];
+    parseMusic(musicTxt: string): MusicLine;
+    /**
+     * @param  {string} lineStr
+     */
+    parseLine(lineStr: string): void;
 }

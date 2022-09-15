@@ -5,7 +5,23 @@ export interface MusicScore {
   spend?: string; // 速度
   duration?: string; // 默认音符时值
   tone?: string; // 调号
-  music?: Note[]; // 乐谱
+  music?: Array<MusicLine>; // 乐谱
+  totalNotes?: number;
+  scoreLines?: number; // 乐谱占用行数
+  startLine?: number; // 乐谱开始行数
+  endLine?: number; // 乐谱结束行数
+}
+
+export interface MusicLine {
+  scoreLineIndex?: number;
+  noteLineIndex?: number;
+  totalLineNotes?: number;
+  notes?: Note[]; // 乐谱
+}
+
+export interface HeaderLine {
+  key?: string;
+  value?: string;
 }
 
 export interface MusicScoreMap {

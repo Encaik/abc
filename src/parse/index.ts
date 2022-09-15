@@ -1,6 +1,13 @@
 import { AbcError } from '../error';
 import { LogLevel, ModuleType } from '../error/types';
-import { MusicScore, MusicScoreMap, Note, NoteType } from './type';
+import {
+  HeaderLine,
+  MusicLine,
+  MusicScore,
+  MusicScoreMap,
+  Note,
+  NoteType,
+} from './type';
 
 /**
  * Creates a new Parser.
@@ -36,40 +43,66 @@ export class Parser {
       return;
     }
     const scoreReg: RegExp = new RegExp('(X:)?[^X]+', 'g');
-    console.log('parseScore:', parseStr.match(scoreReg));
+    let totalLines: number = 1;
     parseStr.match(scoreReg).forEach((scoreStr) => {
       if (scoreStr) {
-        const score = this.parseScore(scoreStr);
-        this.scoreMap[score.id] = score;
+        const parseLines = scoreStr.split('\n');
+        const scoreLines = parseLines.length;
+        const startLine = totalLines;
+        totalLines += scoreLines;
+        const endLine = totalLines - 1;
+        const score = this.parseScore(parseLines); // scoreStr
+        this.scoreMap[score.id] = {
+          ...score,
+          scoreLines,
+          startLine,
+          endLine,
+        };
       }
     });
-    console.log(this.scoreMap);
     return this.scoreMap;
   }
 
   /**
    * 解析拥有唯一标识的单首乐谱
-   * @param {String} scoreStr
+   * @param {String[]} parseLines
    * @return {MusicScore}
    */
-  parseScore(scoreStr: string): MusicScore {
-    const score: MusicScore = {};
-    const infoReg: RegExp = new RegExp('[A-Z]:.*', 'g');
-    score.music = this.parseMusic(
-      scoreStr.replace(infoReg, (infoStr) => {
-        const info = this.parseInfo(score, infoStr);
-        return '';
-      })
-    );
+  parseScore(parseLines: string[]): MusicScore {
+    console.log(parseLines);
+    const score: MusicScore = {
+      music: [],
+      totalNotes: 0,
+    };
+    const infoReg: RegExp = new RegExp('[A-Z]:.*');
+    let scoreLineIndex: number = 1;
+    let noteLineIndex: number = 1;
+    parseLines.forEach((line) => {
+      if (line) {
+        if (infoReg.test(line)) {
+          const info = this.parseInfo(line);
+          score[info.key] = info.value;
+          scoreLineIndex++;
+        } else {
+          const music = this.parseMusic(line);
+          music.scoreLineIndex = scoreLineIndex;
+          music.noteLineIndex = noteLineIndex;
+          score.music.push(music);
+          score.totalNotes += music.totalLineNotes;
+          noteLineIndex++;
+          scoreLineIndex++;
+        }
+      }
+    });
     return score;
   }
 
   /**
    * 解析abc乐谱信息部分
-   * @param {MusicScore} score
    * @param {string} infoStr abc乐曲信息部分字符串
+   * @return { HeaderLine }
    */
-  parseInfo(score: MusicScore, infoStr: string) {
+  parseInfo(infoStr: string): HeaderLine {
     const infoNameMap = {
       X: 'id',
       T: 'title',
@@ -80,24 +113,23 @@ export class Parser {
     };
     const infoReg = new RegExp('([A-Z]):(.*)', 'g');
     const regArr = infoReg.exec(infoStr);
-    score[infoNameMap[regArr[1]]] = regArr[2];
+    return { key: infoNameMap[regArr[1]], value: regArr[2] };
   }
 
   /**
    * 解析abc乐谱部分
    * @param {string} musicTxt abc乐曲乐谱部分字符串
-   * @return {Note[]}
+   * @return {MusicLine}
    */
-  parseMusic(musicTxt: string): Note[] {
-    const musicScoreStr = musicTxt.replace(/\s/g, '');
+  parseMusic(musicTxt: string): MusicLine {
+    console.log(musicTxt);
     const noteReg: RegExp = new RegExp(
       "{|}|\\(|\\)|(=|(\\^|_){1,2})?[A-Ga-g]('|,)*(\\/?\\d)?|:?\\|{1,2}:?",
       'g'
     );
-    const musicScoreArr = musicScoreStr.match(noteReg);
-    console.log(musicScoreArr);
+    const musicScoreArr = musicTxt.match(noteReg);
     const noteList: Note[] = [];
-    let noteIndex: number = 1;
+    let noteIndex: number = 0;
     let isGraceNote: boolean = false;
     const slurStack: Symbol[] = [];
     for (let index = 0; index < musicScoreArr.length; index++) {
@@ -141,6 +173,7 @@ export class Parser {
           const pitchUp = /'+/.exec(note)?.[0]?.split('').length || 0;
           const pitchDown = /,+/.exec(note)?.[0]?.split('').length || 0;
           const duration = /\/?\d+/.exec(note)?.[0] || '1';
+          noteIndex++;
           noteList.push({
             noteIndex,
             type: NoteType.Note,
@@ -155,11 +188,19 @@ export class Parser {
             grace: isGraceNote,
             slur: [...slurStack],
           });
-          noteIndex++;
           break;
       }
     }
-    console.log(noteList);
-    return noteList;
+    return {
+      totalLineNotes: noteIndex,
+      notes: noteList,
+    };
+  }
+
+  /**
+   * @param  {string} lineStr
+   */
+  parseLine(lineStr: string) {
+    console.log(lineStr);
   }
 }
